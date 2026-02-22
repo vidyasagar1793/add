@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>frontend</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      window.onerror = function(message, source, lineno, colno, error) {
+        const errorDiv = document.createElement('div');
+        errorDiv.style.position = 'fixed';
+        errorDiv.style.top = '0';
+        errorDiv.style.left = '0';
+        errorDiv.style.width = '100%';
+        errorDiv.style.height = '100%'; 
+        errorDiv.style.backgroundColor = 'rgba(100,0,0,0.9)';
+        errorDiv.style.color = 'white';
+        errorDiv.style.padding = '20px';
+        errorDiv.style.zIndex = '9999';
+        errorDiv.style.overflow = 'auto';
+        errorDiv.innerHTML = '<h1>Global Error Caught</h1><p>Message: ' + message + '</p><p>Source: ' + source + ':' + lineno + '</p><pre>' + (error ? error.stack : 'No stack trace') + '</pre>';
+        document.body.appendChild(errorDiv);
+      };
+      
+      // Check if root exists
+      window.onload = function() {
+        if (!document.getElementById('root')) {
+            const msg = 'Root element #root not found in DOM!';
+            const div = document.createElement('div');
+            div.innerHTML = msg;
+            div.style.color = 'red';
+            div.style.fontSize = '2em';
+            document.body.appendChild(div);
+            throw new Error(msg);
+        }
+      };
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
