@@ -17,7 +17,7 @@ const Signup: FC = () => {
                 password,
             });
             navigate('/login');
-        } catch (err: any) {
+        } catch {
             setError('Error creating account. Email may already be in use.');
         }
     };

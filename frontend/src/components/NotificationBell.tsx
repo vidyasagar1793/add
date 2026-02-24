@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type FC } from 'react';
+import { useState, useEffect, useRef, useCallback, type FC } from 'react';
 import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
 
@@ -17,15 +17,28 @@ const NotificationBell: FC = () => {
     const { token } = useAuth();
     const dropdownRef = useRef<HTMLDivElement>(null);
 
+    const fetchNotifications = useCallback(async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/api/v1/notifications/', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setNotifications(response.data);
+            setUnreadCount(response.data.filter((n: Notification) => !n.is_read).length);
+        } catch (error) {
+            console.error('Error fetching notifications:', error);
+        }
+    }, [token]);
+
     // Poll for notifications every 30 seconds
     useEffect(() => {
         if (!token) return;
 
+        // eslint-disable-next-line
         fetchNotifications();
         const interval = setInterval(fetchNotifications, 30000);
 
         return () => clearInterval(interval);
-    }, [token]);
+    }, [token, fetchNotifications]);
 
     // Handle outside click to close dropdown
     useEffect(() => {
@@ -37,18 +50,6 @@ const NotificationBell: FC = () => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [dropdownRef]);
-
-    const fetchNotifications = async () => {
-        try {
-            const response = await axios.get('http://localhost:8000/api/v1/notifications/', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setNotifications(response.data);
-            setUnreadCount(response.data.filter((n: Notification) => !n.is_read).length);
-        } catch (error) {
-            console.error('Error fetching notifications:', error);
-        }
-    };
 
     const markAsRead = async (id: number) => {
         try {

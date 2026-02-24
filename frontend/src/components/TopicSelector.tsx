@@ -1,4 +1,4 @@
-import { useState, useEffect, type FC } from 'react';
+import { useState, useEffect, useCallback, type FC } from 'react';
 import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
 
@@ -15,11 +15,7 @@ const TopicSelector: FC = () => {
     const [message, setMessage] = useState('');
     const { token } = useAuth();
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             setLoading(true);
             const [allTopicsRes, userTopicsRes] = await Promise.all([
@@ -38,7 +34,11 @@ const TopicSelector: FC = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [token]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     const toggleTopic = (id: number) => {
         if (selectedTopicIds.includes(id)) {
