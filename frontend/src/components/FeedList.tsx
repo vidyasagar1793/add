@@ -1,4 +1,4 @@
-import { useState, useEffect, type FC, type FormEvent } from 'react';
+import { useState, useEffect, useCallback, type FC, type FormEvent } from 'react';
 import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
 
@@ -17,11 +17,7 @@ const FeedList: FC = () => {
     const [message, setMessage] = useState('');
     const { token } = useAuth();
 
-    useEffect(() => {
-        fetchFeeds();
-    }, []);
-
-    const fetchFeeds = async () => {
+    const fetchFeeds = useCallback(async () => {
         try {
             const response = await axios.get('http://localhost:8000/api/v1/feeds/', {
                 headers: { Authorization: `Bearer ${token}` }
@@ -30,7 +26,12 @@ const FeedList: FC = () => {
         } catch (error) {
             console.error('Error fetching feeds:', error);
         }
-    };
+    }, [token]);
+
+    useEffect(() => {
+        // eslint-disable-next-line
+        fetchFeeds();
+    }, [fetchFeeds]);
 
     const handleAddFeed = async (e: FormEvent) => {
         e.preventDefault();

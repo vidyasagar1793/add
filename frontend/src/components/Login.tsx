@@ -25,7 +25,7 @@ const Login: FC = () => {
             });
             login(response.data.access_token);
             navigate('/');
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error(err);
             setError('Invalid email or password');
         }

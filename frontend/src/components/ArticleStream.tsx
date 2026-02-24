@@ -1,6 +1,12 @@
-import { useState, useEffect, type FC } from 'react';
+import { useState, useEffect, useCallback, type FC } from 'react';
 import axios from 'axios';
 import { useAuth } from '../hooks/useAuth';
+
+interface Topic {
+    id: number;
+    name: string;
+    slug: string;
+}
 
 interface Article {
     id: number;
@@ -12,23 +18,11 @@ interface Article {
     view_count: number;
 }
 
-interface Topic {
-    id: number;
-    name: string;
-    slug: string;
-}
-
 const ArticleStream: FC = () => {
     const [articles, setArticles] = useState<Article[]>([]);
     const { token } = useAuth();
 
-    useEffect(() => {
-        if (token) {
-            fetchArticles();
-        }
-    }, [token]);
-
-    const fetchArticles = async () => {
+    const fetchArticles = useCallback(async () => {
         try {
             const response = await axios.get('http://localhost:8000/api/v1/articles/', {
                 headers: { Authorization: `Bearer ${token}` }
@@ -37,7 +31,14 @@ const ArticleStream: FC = () => {
         } catch (error) {
             console.error('Error fetching articles:', error);
         }
-    };
+    }, [token]);
+
+    useEffect(() => {
+        if (token) {
+            // eslint-disable-next-line
+            fetchArticles();
+        }
+    }, [token, fetchArticles]);
 
     const handleArticleClick = async (articleId: number, url: string) => {
         // Increment view count via API
@@ -54,6 +55,14 @@ const ArticleStream: FC = () => {
         // Open article in new tab
         window.open(url, '_blank');
     };
+
+    if (articles.length === 0) {
+        return (
+            <div className="text-center text-gray-500 py-10">
+                No articles found. Add some feeds to get started!
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -93,11 +102,6 @@ const ArticleStream: FC = () => {
                     </div>
                 </div>
             ))}
-            {articles.length === 0 && (
-                <div className="text-center text-gray-500 py-10">
-                    No articles found. Add some feeds to get started!
-                </div>
-            )}
         </div>
     );
 };

@@ -1,10 +1,8 @@
-/// <reference types="vitest" />
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import Login from './Login';
 import { MemoryRouter } from 'react-router-dom';
 import axios from 'axios';
-import * as useAuthHook from '../hooks/useAuth';
 
 // Mock axios
 vi.mock('axios');
@@ -63,7 +61,7 @@ describe('Login Component', () => {
 
     it('handles successful login', async () => {
         const mockToken = 'mock-jwt-token';
-        (axios.post as any).mockResolvedValueOnce({ data: { access_token: mockToken } });
+        (axios.post as Mock).mockResolvedValueOnce({ data: { access_token: mockToken } });
 
         render(
             <MemoryRouter>
@@ -89,7 +87,7 @@ describe('Login Component', () => {
     });
 
     it('handles failed login', async () => {
-        (axios.post as any).mockRejectedValueOnce(new Error('Invalid credentials'));
+        (axios.post as Mock).mockRejectedValueOnce(new Error('Invalid credentials'));
 
         render(
             <MemoryRouter>

@@ -1,6 +1,7 @@
-import { useContext, type ReactElement } from 'react';
+import { type ReactElement } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, AuthContext } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './hooks/useAuth';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import FeedList from './components/FeedList';
@@ -9,7 +10,7 @@ import TopicSelector from './components/TopicSelector';
 import NotificationBell from './components/NotificationBell';
 
 const ProtectedRoute = ({ children }: { children: ReactElement }) => {
-  const { token, isLoading } = useContext(AuthContext)!;
+  const { token, isLoading } = useAuth();
   console.log('ProtectedRoute: isLoading=', isLoading, 'token=', !!token);
 
   if (isLoading) {
